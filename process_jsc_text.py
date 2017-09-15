@@ -1,11 +1,32 @@
 from bs4 import BeautifulSoup
-
+import re
+import string
 
 def html2text(doc):
     print('processing {}'.format(doc))
-    text = open(doc).read()
-    soup = BeautifulSoup(text, 'html.parser')
-    return soup.get_text()
+    html_doc = open(doc).read()
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    text = soup.get_text()
+    return text
+
+
+def clean_text(doc):
+    text = re.sub(r'^https?:\/\/.*[\r\n]*', '', doc, flags=re.MULTILINE)
+    text = text.replace('/', ' ')
+    text = remove_punctuation(text)
+    text = remove_empty_lines(text)
+    return text
+
+
+def remove_punctuation(s):
+    my_punctuations = string.punctuation + "،" + "؛" + "؟" + "«" + "»"
+    translator = str.maketrans('', '', my_punctuations)
+    return s.translate(translator)
+
+
+def remove_empty_lines(text):
+    lines = [s.rstrip() for s in text.split("\n") if s.rstrip()]
+    return '\n'.join(lines)
 
 
 def write_file(f, text):
@@ -19,6 +40,9 @@ file2 = 'tashkeela_corpus/aljazeera/aljazeera-2016-12-29.b.txt'
 
 doc1 = html2text(file1)
 doc2 = html2text(file2)
+
+doc1 = clean_text(doc1)
+doc2 = clean_text(doc2)
 
 out1 = 'tashkeela_corpus/aljazeera_processed/aljazeera.txt'
 out2 = 'tashkeela_corpus/aljazeera_processed/aljazeera-2016-12-29.b.txt'
