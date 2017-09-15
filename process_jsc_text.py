@@ -19,7 +19,7 @@ def clean_text(doc):
 
 
 def remove_punctuation(s):
-    my_punctuations = string.punctuation + "،" + "؛" + "؟" + "«" + "»"
+    my_punctuations = string.punctuation + "،" + "؛" + "؟" + "«" + "»" + 'ـ'
     translator = str.maketrans('', '', my_punctuations)
     return s.translate(translator)
 
@@ -44,8 +44,7 @@ doc2 = html2text(file2)
 doc1 = clean_text(doc1)
 doc2 = clean_text(doc2)
 
-out1 = 'tashkeela_corpus/aljazeera_processed/aljazeera.txt'
-out2 = 'tashkeela_corpus/aljazeera_processed/aljazeera-2016-12-29.b.txt'
+doc = doc1 + '\n\n-------------------\n\n' + doc2
+out = 'tashkeela_corpus/aljazeera_processed/jsc.txt'
 
-write_file(out1, doc1)
-write_file(out2, doc2)
+write_file(out, doc)
