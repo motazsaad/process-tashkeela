@@ -1,6 +1,9 @@
+import glob
+import os
 from bs4 import BeautifulSoup
 import re
 import string
+
 
 def html2text(doc):
     print('processing {}'.format(doc))
@@ -8,6 +11,16 @@ def html2text(doc):
     soup = BeautifulSoup(html_doc, 'html.parser')
     text = soup.get_text()
     return text
+
+
+def xml2text(doc):
+    print('processing {}'.format(doc))
+    html_doc = open(doc).read()
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    title = soup.find('title').get_text()
+    author = soup.find('author').get_text()
+    body = soup.find('body').get_text()
+    return title + '\n' + author + '\n' + body
 
 
 def clean_text(doc):
@@ -19,7 +32,7 @@ def clean_text(doc):
 
 
 def remove_punctuation(s):
-    my_punctuations = string.punctuation + "،" + "؛" + "؟" + "«" + "»" + 'ـ'
+    my_punctuations = string.punctuation + "،" + "؛" + "؟" + "«" + "»" + 'ـ' + '•'
     translator = str.maketrans('', '', my_punctuations)
     return s.translate(translator)
 
@@ -47,4 +60,14 @@ doc2 = clean_text(doc2)
 doc = doc1 + '\n\n-------------------\n\n' + doc2
 out = 'tashkeela_corpus/aljazeera_processed/jsc.txt'
 
+write_file(out, doc)
+
+################################################
+
+story_files = glob.glob(os.path.join('tashkeela_corpus/sulaity', '*.xml'))
+doc = ''
+for story in story_files:
+    doc += clean_text(xml2text(story))
+
+out = 'sulaity_processed/story.txt'
 write_file(out, doc)
