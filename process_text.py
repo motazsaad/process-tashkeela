@@ -93,7 +93,8 @@ doc2 = html2text(file2)
 doc1 = clean_text(doc1)
 doc2 = clean_text(doc2)
 
-doc = doc1 + '\n\n-------------------\n\n' + doc2
+# doc = doc1 + '\n\n-------------------\n\n' + doc2
+doc = doc1 + doc2
 out = 'tashkeela_corpus/aljazeera_processed/jsc.txt'
 
 write_file(out, doc)
