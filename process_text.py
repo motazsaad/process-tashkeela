@@ -3,6 +3,26 @@ import os
 from bs4 import BeautifulSoup
 import re
 import string
+from alphabet_detector import AlphabetDetector
+
+diacritics_list = """
+                             ّ   
+                             َ   
+                             ً   
+                             ُ   
+                             ٌ   
+                             ِ   
+                             ٍ   
+                             ْ   
+                         """.split()
+
+
+def has_diacritics(word):
+    for char in word:
+        if char in diacritics_list:
+            return True
+    return False
+
 
 
 def html2text(doc):
@@ -27,6 +47,9 @@ def clean_text(doc):
     text = re.sub(r'^https?:\/\/.*[\r\n]*', '', doc, flags=re.MULTILINE)
     text = text.replace('/', ' ')
     text = remove_punctuation(text)
+    print('# words: {}'.format(len(text.split())))
+    text = keep_text_with_diacritics(text)
+    print('# words with diacritics: {}'.format(len(text.split())))
     text = remove_empty_lines(text)
     return text
 
@@ -40,6 +63,19 @@ def remove_punctuation(s):
 def remove_empty_lines(text):
     lines = [s.rstrip() for s in text.split("\n") if s.rstrip()]
     return '\n'.join(lines)
+
+
+def keep_text_with_diacritics(text):
+    ad = AlphabetDetector()
+    lines = text.split('\n')
+    result_list = list()
+    for line in lines:
+        clean_line = list()
+        for word in line.split():
+            if ad.is_arabic(word) and has_diacritics(word):
+                clean_line.append(word)
+        result_list.append(' '.join(clean_line))
+    return '\n'.join(result_list)
 
 
 def write_file(f, text):
